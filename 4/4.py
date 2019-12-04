@@ -47,7 +47,7 @@ def get_problem_2_solution():
         if contains_double_adjacent(password):
             number_of_possible_passwords_after_condition += 1
 
-    print(f'Number of possible passwords after new conditions is {number_of_possible_passwords_after_condition}.')
+    print(f'Number of possible passwords after new condition(s) is {number_of_possible_passwords_after_condition}.')
 
 
 get_problem_2_solution()
