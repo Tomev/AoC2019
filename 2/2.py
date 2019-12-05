@@ -58,5 +58,5 @@ def get_solution_to_problem_2():
     print(f'Solution to problem 2 is {100 * noun + verb}')
 
 
-# get_solution_to_problem_1()
+get_solution_to_problem_1()
 get_solution_to_problem_2()
