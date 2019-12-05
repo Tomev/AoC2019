@@ -1,3 +1,6 @@
+from ship import ShipComputer
+
+
 def str_vec_to_int_vec(str_vec):
     input_vector = []
 
@@ -16,31 +19,16 @@ def read_input(input_path):
     return str_vec_to_int_vec(strings)
 
 
-def run_program(program):
-    i = 0
-    while True:
-
-        if program[i] == 99:
-            break
-
-        operation_result = 0
-
-        if program[i] == 1:
-            operation_result = program[program[i+1]] + program[program[i+2]]
-        if program[i] == 2:
-            operation_result = program[program[i+1]] * program[program[i+2]]
-
-        program[program[i+3]] = operation_result
-        i += 4
-
-    return program
-
-
 def get_solution_to_problem_1():
     program = read_input('input1.txt')
     program[1] = 12
     program[2] = 2
-    print(f'Solution to problem 1 is {run_program(program)[0]}')
+
+    computer = ShipComputer()
+    computer.set_program(program)
+    computer.run_program()
+
+    print(f'Solution to problem 1 is {computer.program[0]}')
 
 
 def get_solution_to_problem_2():
@@ -50,15 +38,17 @@ def get_solution_to_problem_2():
     noun = 0
 
     solution_found = False
+    initial_program = read_input('input1.txt')
+    computer = ShipComputer()
 
     for verb in range(100):
         for noun in range(100):
-            program = read_input('input1.txt')
+            program = initial_program.copy()
             program[1] = noun
             program[2] = verb
-            program = run_program(program)
-            if program[0] == desired_output:
-                print(f'Verb = {verb}, Noun = {noun}, Out = {program[0]}')
+            computer.set_program(program)
+            computer.run_program()
+            if computer.program[0] == desired_output:
                 solution_found = True
                 break
 
