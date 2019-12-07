@@ -4,7 +4,7 @@ class ShipComputer:
     ip = 0  # Instruction pointer
     instructions = dict()  # Dict of instructions
     EXIT_CODE = 99
-    input = 0
+    input = [0]
 
     def __init__(self):
         self.instructions[1] = self.perform_instruction_1
@@ -49,6 +49,9 @@ class ShipComputer:
         else:
             return self.program[self.program[self.ip + parameter_number]]
 
+    def get_input(self):
+        return self.input.pop(0)
+
     def set_program(self, new_program):
         self.program = new_program
         self.initial_program = new_program
@@ -71,7 +74,7 @@ class ShipComputer:
         self.ip += 4
 
     def perform_instruction_3(self):
-        self.program[self.program[self.ip + 1]] = self.input
+        self.program[self.program[self.ip + 1]] = self.get_input()
         self.ip += 2
 
     def perform_instruction_4(self):
