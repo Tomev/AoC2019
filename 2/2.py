@@ -43,6 +43,7 @@ def get_solution_to_problem_2():
 
     for verb in range(100):
         for noun in range(100):
+            computer.reset()
             program = initial_program.copy()
             program[1] = noun
             program[2] = verb
