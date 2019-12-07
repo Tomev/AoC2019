@@ -1,29 +1,47 @@
 class ShipComputer:
-    initial_program = []
-    program = []
-    ip = 0  # Instruction pointer
-    instructions = dict()  # Dict of instructions
     EXIT_CODE = 99
-    input = [0]
-    output = 0
 
     def __init__(self):
-        self.instructions[1] = self.perform_instruction_1
-        self.instructions[2] = self.perform_instruction_2
-        self.instructions[3] = self.perform_instruction_3
-        self.instructions[4] = self.perform_instruction_4
-        self.instructions[5] = self.perform_instruction_5
-        self.instructions[6] = self.perform_instruction_6
-        self.instructions[7] = self.perform_instruction_7
-        self.instructions[8] = self.perform_instruction_8
+        self.initial_program = []
+        self.instructions = {
+            1: self.perform_instruction_1,
+            2: self.perform_instruction_2,
+            3: self.perform_instruction_3,
+            4: self.perform_instruction_4,
+            5: self.perform_instruction_5,
+            6: self.perform_instruction_6,
+            7: self.perform_instruction_7,
+            8: self.perform_instruction_8,
+        }
+        self.name = 'CPU'
+
+        self.program = []
+        self.ip = 0  # Instruction pointer
+        self.input = []
+        self.output = 0
+
+        self.program_finished = False
+
+    def reset(self):
+        self.ip = 0
+        self.program = self.initial_program
+        self.output = 0
+        self.input = []
+        self.program_finished = False
 
     def run_program(self):
-        self.ip = 0
 
-        while True:
+        while not self.program_finished:
             ic = self.get_instruction_code(self.program[self.ip])
-            if ic == self.EXIT_CODE:
+
+            if ic == 3 and len(self.input) == 0:
+                print(f'{self.name}: Input required.')
                 break
+
+            if ic == self.EXIT_CODE:
+                self.program_finished = True
+                break
+
             self.instructions[ic]()
 
     def get_instruction_code(self, code: int):
