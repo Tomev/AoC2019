@@ -102,4 +102,5 @@ def get_problem_2_solution():
 
 
 space_map = get_space_map('input1')
+get_problem_1_solution()
 get_problem_2_solution()

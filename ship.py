@@ -5,6 +5,7 @@ class ShipComputer:
     instructions = dict()  # Dict of instructions
     EXIT_CODE = 99
     input = [0]
+    output = 0
 
     def __init__(self):
         self.instructions[1] = self.perform_instruction_1
@@ -80,6 +81,7 @@ class ShipComputer:
     def perform_instruction_4(self):
         param1 = self.get_parameter_value(1)
         print(f'Output: {param1}.')
+        self.output = param1
         self.ip += 2
 
     def perform_instruction_5(self):
