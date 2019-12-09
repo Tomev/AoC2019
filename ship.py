@@ -12,6 +12,7 @@ class ShipComputer:
             6: self.perform_instruction_6,
             7: self.perform_instruction_7,
             8: self.perform_instruction_8,
+            9: self.perform_instruction_9
         }
         self.name = 'CPU'
 
@@ -19,6 +20,7 @@ class ShipComputer:
         self.ip = 0  # Instruction pointer
         self.input = []
         self.output = 0
+        self.relative_base = 0
 
         self.program_finished = False
 
@@ -28,6 +30,7 @@ class ShipComputer:
         self.output = 0
         self.input = []
         self.program_finished = False
+        self.relative_base = 0
 
     def run_program(self):
 
@@ -64,9 +67,14 @@ class ShipComputer:
         parameter_mode = code[-2 - parameter_number]
 
         if parameter_mode == '1':
-            return self.program[self.ip + parameter_number]
+            parameter_index = self.ip + parameter_number
+        elif parameter_mode == '2':
+            parameter_index = self.program[self.ip + parameter_number] + self.relative_base
         else:
-            return self.program[self.program[self.ip + parameter_number]]
+            parameter_index = self.program[self.ip + parameter_number]
+
+        self.adjust_program_memory(parameter_index)
+        return self.program[parameter_index]
 
     def get_input(self):
         return self.input.pop(0)
@@ -78,8 +86,13 @@ class ShipComputer:
     def reset_program(self):
         self.program = self.initial_program
 
+    def adjust_program_memory(self, requested_index):
+        while len(self.program) <= requested_index:
+            self.program.append(0)
+
     def perform_instruction_1(self):
         output_address = self.program[self.ip + 3]
+        self.adjust_program_memory(output_address)
         param1 = self.get_parameter_value(1)
         param2 = self.get_parameter_value(2)
         self.program[output_address] = param1 + param2
@@ -87,13 +100,16 @@ class ShipComputer:
 
     def perform_instruction_2(self):
         output_address = self.program[self.ip + 3]
+        self.adjust_program_memory(output_address)
         param1 = self.get_parameter_value(1)
         param2 = self.get_parameter_value(2)
         self.program[output_address] = param1 * param2
         self.ip += 4
 
     def perform_instruction_3(self):
-        self.program[self.program[self.ip + 1]] = self.get_input()
+        output_address = self.get_parameter_value(1)
+        self.adjust_program_memory(output_address)
+        self.program[output_address] = self.get_input()
         self.ip += 2
 
     def perform_instruction_4(self):
@@ -120,6 +136,7 @@ class ShipComputer:
 
     def perform_instruction_7(self):
         address = self.program[self.ip + 3]
+        self.adjust_program_memory(address)
         param1 = self.get_parameter_value(1)
         param2 = self.get_parameter_value(2)
         if param1 < param2:
@@ -131,6 +148,7 @@ class ShipComputer:
 
     def perform_instruction_8(self):
         address = self.program[self.ip + 3]
+        self.adjust_program_memory(address)
         param1 = self.get_parameter_value(1)
         param2 = self.get_parameter_value(2)
         if param1 == param2:
@@ -139,3 +157,9 @@ class ShipComputer:
             result = 0
         self.program[address] = result
         self.ip += 4
+
+    def perform_instruction_9(self):
+        param1 = self.get_parameter_value(1)
+        self.relative_base += param1
+        self.ip += 2
+
