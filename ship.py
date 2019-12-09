@@ -19,7 +19,7 @@ class ShipComputer:
         self.address_getters = {
             1: self.get_position_mode_address,
             2: self.get_immediate_mode_address,
-            3: self.get_relative_mode_value
+            3: self.get_relative_mode_address
         }
         self.name = 'CPU'
 
@@ -67,6 +67,14 @@ class ShipComputer:
         return ic
 
     def get_parameter_value(self, parameter_number: int):
+        value_address = self.get_address_from_parameter(parameter_number)
+
+        print(value_address)
+        print(len(self.program))
+
+        return self.program[value_address]
+
+    def get_address_from_parameter(self, parameter_number: int):
         code = str(self.program[self.ip])
 
         if len(code) < 3:
@@ -75,15 +83,12 @@ class ShipComputer:
         while len(code) < 5:
             code = '0' + code
 
-        value_address = self.get_address_from_parameter()
-
         parameter_mode = int(code[-2 - parameter_number])
 
-        value_getter = self.value_getters.get(parameter_mode, self.get_positional_value)
-        return value_getter(parameter_number)
-
-    def get_address_from_parameter(self):
-        return 0
+        address_getter = self.address_getters.get(parameter_mode, self.get_position_mode_address)
+        address = address_getter(parameter_number)
+        self.adjust_program_memory(address)
+        return address
 
     def get_input(self):
         return self.input.pop(0)
@@ -96,6 +101,8 @@ class ShipComputer:
         self.program = self.initial_program
 
     def adjust_program_memory(self, requested_index):
+
+        print('Adjusting')
         while len(self.program) <= requested_index:
             self.program.append(0)
 
@@ -183,15 +190,4 @@ class ShipComputer:
         return self.ip + parameter_number
 
     def get_relative_mode_address(self, parameter_number):
-
-
-if parameter_mode == '1':
-    parameter_index = self.ip + parameter_number
-elif parameter_mode == '2':
-    parameter_index = self.program[self.ip + parameter_number] + self.relative_base
-else:
-    #parameter_index = self.program[self.ip + parameter_number]
-    parameter_index = self.ip + parameter_number
-
-self.adjust_program_memory(parameter_index)
-return self.program[parameter_index]
+        return self.program[self.ip + parameter_number] + self.relative_base
