@@ -3,6 +3,7 @@ class ShipComputer:
 
     def __init__(self):
         self.initial_program = []
+
         self.instructions = {
             1: self.perform_instruction_1,
             2: self.perform_instruction_2,
@@ -14,6 +15,12 @@ class ShipComputer:
             8: self.perform_instruction_8,
             9: self.perform_instruction_9
         }
+
+        self.address_getters = {
+            1: self.get_position_mode_address,
+            2: self.get_immediate_mode_address,
+            3: self.get_relative_mode_value
+        }
         self.name = 'CPU'
 
         self.program = []
@@ -21,6 +28,7 @@ class ShipComputer:
         self.input = []
         self.output = 0
         self.relative_base = 0
+        self.ic = 0
 
         self.program_finished = False
 
@@ -31,21 +39,24 @@ class ShipComputer:
         self.input = []
         self.program_finished = False
         self.relative_base = 0
+        self.ic = 0
 
     def run_program(self):
 
         while not self.program_finished:
-            ic = self.get_instruction_code(self.program[self.ip])
+            self.ic = self.get_instruction_code(self.program[self.ip])
 
-            if ic == 3 and len(self.input) == 0:
+            # print(self.program[self.ip])
+
+            if self.ic == 3 and len(self.input) == 0:
                 print(f'{self.name}: Input required.')
                 break
 
-            if ic == self.EXIT_CODE:
+            if self.ic == self.EXIT_CODE:
                 self.program_finished = True
                 break
 
-            self.instructions[ic]()
+            self.instructions[self.ic]()
 
     def get_instruction_code(self, code: int):
         code_str = str(code)
@@ -64,17 +75,15 @@ class ShipComputer:
         while len(code) < 5:
             code = '0' + code
 
-        parameter_mode = code[-2 - parameter_number]
+        value_address = self.get_address_from_parameter()
 
-        if parameter_mode == '1':
-            parameter_index = self.ip + parameter_number
-        elif parameter_mode == '2':
-            parameter_index = self.program[self.ip + parameter_number] + self.relative_base
-        else:
-            parameter_index = self.program[self.ip + parameter_number]
+        parameter_mode = int(code[-2 - parameter_number])
 
-        self.adjust_program_memory(parameter_index)
-        return self.program[parameter_index]
+        value_getter = self.value_getters.get(parameter_mode, self.get_positional_value)
+        return value_getter(parameter_number)
+
+    def get_address_from_parameter(self):
+        return 0
 
     def get_input(self):
         return self.input.pop(0)
@@ -107,7 +116,11 @@ class ShipComputer:
         self.ip += 4
 
     def perform_instruction_3(self):
+        output_address = self.program[self.ip + 1]
+        print(f'A old:{output_address}, index: {self.ip + 1}')
         output_address = self.get_parameter_value(1)
+        print(f'A Get:{output_address}, ip: {self.ip}')
+
         self.adjust_program_memory(output_address)
         self.program[output_address] = self.get_input()
         self.ip += 2
@@ -163,3 +176,22 @@ class ShipComputer:
         self.relative_base += param1
         self.ip += 2
 
+    def get_position_mode_address(self, parameter_number):
+        return self.program[self.ip + parameter_number]
+
+    def get_immediate_mode_address(self, parameter_number):
+        return self.ip + parameter_number
+
+    def get_relative_mode_address(self, parameter_number):
+
+
+if parameter_mode == '1':
+    parameter_index = self.ip + parameter_number
+elif parameter_mode == '2':
+    parameter_index = self.program[self.ip + parameter_number] + self.relative_base
+else:
+    #parameter_index = self.program[self.ip + parameter_number]
+    parameter_index = self.ip + parameter_number
+
+self.adjust_program_memory(parameter_index)
+return self.program[parameter_index]

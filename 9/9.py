@@ -6,6 +6,7 @@ def get_solution_to_problem_1():
     cpu = ShipComputer()
     cpu.input.append(1)
     program = get_program_from_input('input')
+    # program = get_program_from_input('test3')
     cpu.set_program(program)
     cpu.run_program()
 
