@@ -146,8 +146,7 @@ class ShipComputer:
             self.ip += 3
 
     def perform_instruction_7(self):
-        address = self.program[self.ip + 3]
-        self.adjust_program_memory(address)
+        address = self.get_address_from_parameter(3)
         param1 = self.get_parameter_value(1)
         param2 = self.get_parameter_value(2)
         if param1 < param2:
@@ -158,7 +157,7 @@ class ShipComputer:
         self.ip += 4
 
     def perform_instruction_8(self):
-        address = self.program[self.ip + 3]
+        address = self.get_address_from_parameter(3)
         self.adjust_program_memory(address)
         param1 = self.get_parameter_value(1)
         param2 = self.get_parameter_value(2)
