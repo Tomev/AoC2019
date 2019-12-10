@@ -17,9 +17,9 @@ class ShipComputer:
         }
 
         self.address_getters = {
-            1: self.get_position_mode_address,
-            2: self.get_immediate_mode_address,
-            3: self.get_relative_mode_address
+            0: self.get_position_mode_address,
+            1: self.get_immediate_mode_address,
+            2: self.get_relative_mode_address
         }
         self.name = 'CPU'
 
@@ -46,7 +46,7 @@ class ShipComputer:
         while not self.program_finished:
             self.ic = self.get_instruction_code(self.program[self.ip])
 
-            # print(self.program[self.ip])
+            # print(f'Instruction {self.program[self.ip]}, ip:{self.ip}')
 
             if self.ic == 3 and len(self.input) == 0:
                 print(f'{self.name}: Input required.')
@@ -61,24 +61,20 @@ class ShipComputer:
     def get_instruction_code(self, code: int):
         code_str = str(code)
         if len(code_str) > 2:
-            ic = int(code_str[-1]) + int(code_str[-2])
+            ic = int(code_str[-2] + code_str[-1])
         else:
             ic = self.program[self.ip]
         return ic
 
     def get_parameter_value(self, parameter_number: int):
         value_address = self.get_address_from_parameter(parameter_number)
-
-        print(value_address)
-        print(len(self.program))
-
         return self.program[value_address]
 
     def get_address_from_parameter(self, parameter_number: int):
         code = str(self.program[self.ip])
 
         if len(code) < 3:
-            return self.program[self.program[self.ip + parameter_number]]
+            return self.program[self.ip + parameter_number]
 
         while len(code) < 5:
             code = '0' + code
@@ -102,32 +98,27 @@ class ShipComputer:
 
     def adjust_program_memory(self, requested_index):
 
-        print('Adjusting')
+        # print(f'Adjusting {len(self.program)} to {requested_index + 1}.')
+
         while len(self.program) <= requested_index:
             self.program.append(0)
 
     def perform_instruction_1(self):
-        output_address = self.program[self.ip + 3]
-        self.adjust_program_memory(output_address)
+        output_address = self.get_address_from_parameter(3)
         param1 = self.get_parameter_value(1)
         param2 = self.get_parameter_value(2)
         self.program[output_address] = param1 + param2
         self.ip += 4
 
     def perform_instruction_2(self):
-        output_address = self.program[self.ip + 3]
-        self.adjust_program_memory(output_address)
+        output_address = self.get_address_from_parameter(3)
         param1 = self.get_parameter_value(1)
         param2 = self.get_parameter_value(2)
         self.program[output_address] = param1 * param2
         self.ip += 4
 
     def perform_instruction_3(self):
-        output_address = self.program[self.ip + 1]
-        print(f'A old:{output_address}, index: {self.ip + 1}')
-        output_address = self.get_parameter_value(1)
-        print(f'A Get:{output_address}, ip: {self.ip}')
-
+        output_address = self.get_address_from_parameter(1)
         self.adjust_program_memory(output_address)
         self.program[output_address] = self.get_input()
         self.ip += 2
