@@ -26,7 +26,8 @@ class ShipComputer:
         self.program = []
         self.ip = 0  # Instruction pointer
         self.input = []
-        self.output = 0
+        self.output = 0  # This will store last output
+        self.outputs = []
         self.relative_base = 0
         self.ic = 0
 
@@ -37,6 +38,7 @@ class ShipComputer:
         self.program = self.initial_program
         self.output = 0
         self.input = []
+        self.outputs = []
         self.program_finished = False
         self.relative_base = 0
         self.ic = 0
@@ -68,12 +70,15 @@ class ShipComputer:
 
     def get_parameter_value(self, parameter_number: int):
         value_address = self.get_address_from_parameter(parameter_number)
+        # print(value_address)
+        # print(len(self.program))
         return self.program[value_address]
 
     def get_address_from_parameter(self, parameter_number: int):
         code = str(self.program[self.ip])
 
         if len(code) < 3:
+            self.adjust_program_memory(self.program[self.ip + parameter_number])
             return self.program[self.ip + parameter_number]
 
         while len(code) < 5:
@@ -127,6 +132,7 @@ class ShipComputer:
         param1 = self.get_parameter_value(1)
         print(f'Output: {param1}.')
         self.output = param1
+        self.outputs.append(param1)
         self.ip += 2
 
     def perform_instruction_5(self):
