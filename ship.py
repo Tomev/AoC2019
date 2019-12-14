@@ -32,6 +32,7 @@ class ShipComputer:
         self.ic = 0
 
         self.program_finished = False
+        self.debug = False
 
     def reset(self):
         self.ip = 0
@@ -51,7 +52,7 @@ class ShipComputer:
             # print(f'Instruction {self.program[self.ip]}, ip:{self.ip}')
 
             if self.ic == 3 and len(self.input) == 0:
-                print(f'{self.name}: Input required.')
+                self.print_if_debug(f'{self.name}: Input required.')
                 break
 
             if self.ic == self.EXIT_CODE:
@@ -130,7 +131,7 @@ class ShipComputer:
 
     def perform_instruction_4(self):
         param1 = self.get_parameter_value(1)
-        print(f'Output: {param1}.')
+        self.print_if_debug(f'Output: {param1}.')
         self.output = param1
         self.outputs.append(param1)
         self.ip += 2
@@ -187,3 +188,7 @@ class ShipComputer:
 
     def get_relative_mode_address(self, parameter_number):
         return self.program[self.ip + parameter_number] + self.relative_base
+
+    def print_if_debug(self, message):
+        if self.debug:
+            print(message)
