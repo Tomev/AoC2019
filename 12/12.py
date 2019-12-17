@@ -130,4 +130,5 @@ def get_solution_to_problem_2():
 
     print(result)
 
+
 get_solution_to_problem_2()
